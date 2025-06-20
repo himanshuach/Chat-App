@@ -1,0 +1,115 @@
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #e4e6eb;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #1c1e21;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #25d366;
+  box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+}
+
+.input:disabled {
+  background-color: #f0f2f5;
+  color: #65676b;
+  cursor: not-allowed;
+}
+
+.input-error {
+  border-color: #dc3545;
+}
+
+.input-error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+/* Size variants */
+.input-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  min-height: 32px;
+}
+
+.input-medium {
+  padding: 8px 12px;
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.input-large {
+  padding: 12px 16px;
+  font-size: 16px;
+  min-height: 48px;
+}
+
+/* Icon support */
+.input-with-icon {
+  padding-left: 40px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #65676b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.input-with-icon.input-small {
+  padding-left: 32px;
+}
+
+.input-with-icon.input-small .input-icon {
+  left: 8px;
+}
+
+.input-with-icon.input-large {
+  padding-left: 48px;
+}
+
+.input-with-icon.input-large .input-icon {
+  left: 16px;
+}
+
+/* Error message */
+.input-error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+/* Search input specific styles */
+.input[type="search"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2365676b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+  background-size: 16px;
+  padding-left: 40px;
+}
+
+.input[type="search"].input-small {
+  background-position: 8px center;
+  padding-left: 32px;
+}
+
+.input[type="search"].input-large {
+  background-position: 16px center;
+  padding-left: 48px;
+} 
