@@ -30,8 +30,8 @@ import {
   Visibility,
   VisibilityOff
 } from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
-import { useSocket } from '../hooks/useSocket';
+import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../hooks/useSocket';
 
 interface Message {
   _id: string;

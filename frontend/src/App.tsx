@@ -1,9 +1,10 @@
 import React from 'react';
-import Sidebar from './components/Sidebar';
-import UserList from './components/UserList';
-import ChatWindow from './components/ChatWindow';
-// import ProfileModal from './components/ProfileModal';
+import Sidebar from './components/Sidebar/Sidebar';
+import UserList from './components/Sidebar/UserList';
+import ProfileModal from './components/Modals/ProfileModal';
+
 import './App.css';
+import ChatWindow from './components/Chat/ChatWindow';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
         <UserList />
         <ChatWindow />
       </div>
-      {/* <ProfileModal /> */}
+      <ProfileModal />
     </div>
   );
 }
