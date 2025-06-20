@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "nodemon --loader ts-node/esm server.ts",
+    "dev": "nodemon --exec \"ts-node --esm\" server.ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "lint": "eslint .",

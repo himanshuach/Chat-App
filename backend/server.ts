@@ -10,6 +10,7 @@ import connectDB from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import groupRoutes from './routes/groupRoutes.js';
+import User from './models/User.js';
 import { AuthRequest } from './types/index.js';
 
 dotenv.config(); // Load .env variables
@@ -45,46 +46,241 @@ app.use('/api/groups', groupRoutes);
 
 // Socket.io connection handling
 const connectedUsers = new Map<string, string>();
+const typingUsers = new Map<string, Set<string>>();
 
 io.on('connection', (socket: Socket) => {
-  console.log('A user connected');
+  console.log('A user connected:', socket.id);
 
-  socket.on('setup', (userData: { _id: string }) => {
-    socket.join(userData._id);
-    connectedUsers.set(userData._id, socket.id);
-    socket.emit('connected');
+  // Authenticate user and setup
+  socket.on('setup', async (userData: { _id: string }) => {
+    try {
+      const user = await User.findById(userData._id);
+      if (!user) {
+        socket.emit('error', { message: 'User not found' });
+        return;
+      }
+
+      // Update user status to online
+      await user['updateStatus']('online');
+      user.socketId = socket.id;
+      await user.save();
+
+      socket.join(userData._id);
+      connectedUsers.set(userData._id, socket.id);
+
+      // Notify friends that user is online
+      const friends = await User.findById(userData._id).populate('friends');
+      if (friends?.friends) {
+        friends.friends.forEach((friend: any) => {
+          if (connectedUsers.has(friend._id.toString())) {
+            io.to(connectedUsers.get(friend._id.toString())!).emit('friend_online', {
+              userId: userData._id,
+              status: 'online'
+            });
+          }
+        });
+      }
+
+      socket.emit('connected');
+      console.log('User setup complete:', userData._id);
+    } catch (error) {
+      console.error('Setup error:', error);
+      socket.emit('error', { message: 'Setup failed' });
+    }
   });
 
+  // Join chat room
   socket.on('join chat', (room: string) => {
     socket.join(room);
-    console.log('User joined room: ' + room);
+    console.log('User joined room:', room);
   });
 
-  socket.on('typing', (room: string) => {
-    socket.in(room).emit('typing', room);
+  // Leave chat room
+  socket.on('leave chat', (room: string) => {
+    socket.leave(room);
+    console.log('User left room:', room);
   });
 
-  socket.on('stop typing', (room: string) => {
-    socket.in(room).emit('stop typing', room);
+  // Typing indicator
+  socket.on('typing', async (data: { room: string; userId: string; isTyping: boolean }) => {
+    try {
+      const user = await User.findById(data.userId);
+      if (user) {
+        await user['setTyping'](data.isTyping, data.room);
+        
+        if (data.isTyping) {
+          if (!typingUsers.has(data.room)) {
+            typingUsers.set(data.room, new Set());
+          }
+          typingUsers.get(data.room)!.add(data.userId);
+        } else {
+          typingUsers.get(data.room)?.delete(data.userId);
+          if (typingUsers.get(data.room)?.size === 0) {
+            typingUsers.delete(data.room);
+          }
+        }
+
+        socket.to(data.room).emit('typing', {
+          room: data.room,
+          userId: data.userId,
+          isTyping: data.isTyping,
+          username: user.username
+        });
+      }
+    } catch (error) {
+      console.error('Typing error:', error);
+    }
   });
 
-  socket.on('new message', (newMessageReceived: any) => {
-    const chat = newMessageReceived.chat;
-    if (!chat.users) return console.log('chat.users not defined');
+  // Stop typing
+  socket.on('stop typing', async (data: { room: string; userId: string }) => {
+    try {
+      const user = await User.findById(data.userId);
+      if (user) {
+        await user['setTyping'](false);
+        
+        typingUsers.get(data.room)?.delete(data.userId);
+        if (typingUsers.get(data.room)?.size === 0) {
+          typingUsers.delete(data.room);
+        }
 
-    chat.users.forEach((user: { _id: string }) => {
-      if (user._id === newMessageReceived.sender._id) return;
-      socket.in(user._id).emit('message received', newMessageReceived);
-    });
+        socket.to(data.room).emit('stop typing', {
+          room: data.room,
+          userId: data.userId,
+          username: user.username
+        });
+      }
+    } catch (error) {
+      console.error('Stop typing error:', error);
+    }
   });
 
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-    // Remove user from connected users
+  // New message
+  socket.on('new message', async (newMessageReceived: any) => {
+    try {
+      const chat = newMessageReceived.chat;
+      if (!chat.users) return console.log('chat.users not defined');
+
+      // Update message status to delivered for all recipients
+      chat.users.forEach(async (user: { _id: string }) => {
+        if (user._id === newMessageReceived.sender._id) return;
+        
+        // Emit to specific user's room
+        socket.in(user._id).emit('message received', newMessageReceived);
+        
+        // Update message status to delivered
+        // This would typically be done via API call, but for demo we'll emit
+        socket.in(user._id).emit('message status update', {
+          messageId: newMessageReceived._id,
+          status: 'delivered'
+        });
+      });
+    } catch (error) {
+      console.error('New message error:', error);
+    }
+  });
+
+  // Message read receipt
+  socket.on('message read', async (data: { messageId: string; userId: string; room: string }) => {
+    try {
+      // Emit read receipt to sender
+      socket.to(data.room).emit('message read receipt', {
+        messageId: data.messageId,
+        readBy: data.userId,
+        readAt: new Date()
+      });
+    } catch (error) {
+      console.error('Message read error:', error);
+    }
+  });
+
+  // Message reaction
+  socket.on('message reaction', async (data: { messageId: string; userId: string; emoji: string; room: string }) => {
+    try {
+      socket.to(data.room).emit('message reaction', {
+        messageId: data.messageId,
+        userId: data.userId,
+        emoji: data.emoji,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      console.error('Message reaction error:', error);
+    }
+  });
+
+  // User status change
+  socket.on('status change', async (data: { userId: string; status: 'online' | 'offline' | 'away' | 'busy' }) => {
+    try {
+      const user = await User.findById(data.userId);
+      if (user) {
+        await user['updateStatus'](data.status);
+        
+        // Notify friends of status change
+        const friends = await User.findById(data.userId).populate('friends');
+        if (friends?.friends) {
+          friends.friends.forEach((friend: any) => {
+            if (connectedUsers.has(friend._id.toString())) {
+              io.to(connectedUsers.get(friend._id.toString())!).emit('friend_status_change', {
+                userId: data.userId,
+                status: data.status,
+                lastSeen: user.lastSeen
+              });
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Status change error:', error);
+    }
+  });
+
+  // Disconnect handling
+  socket.on('disconnect', async () => {
+    console.log('A user disconnected:', socket.id);
+    
+    // Find user by socket ID and update status
     for (const [userId, socketId] of connectedUsers.entries()) {
       if (socketId === socket.id) {
+        try {
+          const user = await User.findById(userId);
+          if (user) {
+            await user['updateStatus']('offline');
+            user.socketId = '';
+            await user.save();
+
+            // Notify friends that user is offline
+            const friends = await User.findById(userId).populate('friends');
+            if (friends?.friends) {
+              friends.friends.forEach((friend: any) => {
+                if (connectedUsers.has(friend._id.toString())) {
+                  io.to(connectedUsers.get(friend._id.toString())!).emit('friend_offline', {
+                    userId: userId,
+                    status: 'offline',
+                    lastSeen: user.lastSeen
+                  });
+                }
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Disconnect error:', error);
+        }
+        
         connectedUsers.delete(userId);
         break;
+      }
+    }
+
+    // Remove from typing users
+    for (const [room, users] of typingUsers.entries()) {
+      for (const userId of users) {
+        if (connectedUsers.get(userId) === socket.id) {
+          users.delete(userId);
+          if (users.size === 0) {
+            typingUsers.delete(room);
+          }
+          break;
+        }
       }
     }
   });

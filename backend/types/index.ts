@@ -10,9 +10,24 @@ export interface IUser extends Document {
   profilePicture?: string;
   bio?: string;
   friends: string[];
-  status: 'online' | 'offline';
+  status: 'online' | 'offline' | 'away' | 'busy';
   lastSeen: Date;
+  isTyping?: boolean;
+  typingTo?: string;
+  preferences?: {
+    theme: 'light' | 'dark' | 'auto';
+    notifications: boolean;
+    soundEnabled: boolean;
+    privacy: {
+      lastSeen: 'everyone' | 'friends' | 'nobody';
+      profilePicture: 'everyone' | 'friends' | 'nobody';
+    };
+  };
+  blockedUsers?: string[];
+  socketId?: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  updateStatus(status: 'online' | 'offline' | 'away' | 'busy'): Promise<void>;
+  setTyping(isTyping: boolean, typingTo?: string): Promise<void>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,6 +35,8 @@ export interface IUser extends Document {
 // User Methods interface
 export interface IUserMethods {
   comparePassword(candidatePassword: string): Promise<boolean>;
+  updateStatus(status: 'online' | 'offline' | 'away' | 'busy'): Promise<void>;
+  setTyping(isTyping: boolean, typingTo?: string): Promise<void>;
 }
 
 // User Model interface
@@ -31,8 +48,21 @@ export interface IUserModel extends Document, IUserMethods {
   profilePicture?: string;
   bio?: string;
   friends: string[];
-  status: 'online' | 'offline';
+  status: 'online' | 'offline' | 'away' | 'busy';
   lastSeen: Date;
+  isTyping?: boolean;
+  typingTo?: string;
+  preferences?: {
+    theme: 'light' | 'dark' | 'auto';
+    notifications: boolean;
+    soundEnabled: boolean;
+    privacy: {
+      lastSeen: 'everyone' | 'friends' | 'nobody';
+      profilePicture: 'everyone' | 'friends' | 'nobody';
+    };
+  };
+  blockedUsers?: string[];
+  socketId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,12 +71,26 @@ export interface IUserModel extends Document, IUserMethods {
 export interface IMessage extends Document {
   _id: string;
   sender: string | IUser;
-  receiver: string | IUser;
+  receiver?: string | IUser;
   content: string;
-  type: 'text' | 'image' | 'file';
+  type: 'text' | 'image' | 'video' | 'document' | 'audio';
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  thumbnailUrl?: string;
   status: 'sent' | 'delivered' | 'read';
   isGroupMessage: boolean;
   group?: string | IGroup;
+  reactions?: Array<{
+    user: string | IUser;
+    emoji: string;
+    createdAt: Date;
+  }>;
+  replyTo?: string | IMessage;
+  edited?: boolean;
+  editedAt?: Date;
+  deletedAt?: Date;
+  isDeleted?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

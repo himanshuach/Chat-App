@@ -37,4 +37,4 @@ const protect = async (req: AuthRequest, res: Response, next: NextFunction): Pro
   }
 };
 
-export { protect }; www
+export { protect }; 

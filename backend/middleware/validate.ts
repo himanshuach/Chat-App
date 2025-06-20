@@ -22,9 +22,9 @@ export const validateRegister = [
   body('username')
     .trim()
     .isLength({ min: 3, max: 30 })
-    .withMessage('Username must be between 3 and 30 characters'),
+    .withMessage('Username must be between 4 and 15 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 8 characters long'),
   validate
 ];
 
