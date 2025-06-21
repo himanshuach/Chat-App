@@ -1,5 +1,4 @@
 import React, { forwardRef } from 'react';
-import './Input.css';
 
 interface InputProps {
   type?: 'text' | 'email' | 'password' | 'search';
@@ -32,13 +31,37 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
     onChange?.(e.target.value);
   };
 
+  const baseClasses = 'w-full rounded-lg border bg-white text-gray-800 transition-all focus:outline-none focus:ring-2';
+  const stateClasses = error 
+    ? 'border-red-500 focus:ring-red-400' 
+    : 'border-gray-300 focus:ring-green-500';
+  
+  const sizeClasses = {
+    small: 'px-3 py-1.5 text-xs h-8',
+    medium: 'px-4 py-2 text-sm h-10',
+    large: 'px-6 py-3 text-base h-12',
+  };
+
+  const iconPaddingClass = icon ? (size === 'small' ? 'pl-9' : 'pl-11') : '';
+  const disabledClasses = 'bg-gray-100 text-gray-500 cursor-not-allowed';
+
   return (
-    <div className={`input-container ${className}`}>
-      {icon && <div className="input-icon">{icon}</div>}
+    <div className={`relative w-full ${className}`}>
+      {icon && (
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+          {icon}
+        </div>
+      )}
       <input
         ref={ref}
         type={type}
-        className={`input input-${size} ${icon ? 'input-with-icon' : ''} ${error ? 'input-error' : ''}`}
+        className={`
+          ${baseClasses} 
+          ${stateClasses} 
+          ${sizeClasses[size]}
+          ${iconPaddingClass}
+          ${disabled ? disabledClasses : ''}
+        `}
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
@@ -46,7 +69,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         onBlur={onBlur}
         disabled={disabled}
       />
-      {error && <div className="input-error-message">{error}</div>}
+      {error && <div className="mt-1 ml-1 text-xs text-red-600">{error}</div>}
     </div>
   );
 });

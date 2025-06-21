@@ -1,55 +1,58 @@
 import React from 'react';
 import { Button } from '../components/common';
-import './WelcomePage.css';
+import { MessageSquare, Users, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface WelcomePageProps {
-  onGetStarted?: () => void;
-}
+const WelcomePage: React.FC = () => {
+  const navigate = useNavigate();
 
-const WelcomePage: React.FC<WelcomePageProps> = ({ onGetStarted }) => {
+  const handleGetStarted = () => {
+    navigate('/auth');
+  };
+
   return (
-    <div className="welcome-page">
-      <div className="welcome-container">
-        <div className="welcome-content">
-          <div className="welcome-icon">
-            <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                fill="#25d366"
-              />
-            </svg>
-          </div>
-          
-          <h1 className="welcome-title">Welcome to WhatsApp Clone</h1>
-          
-          <p className="welcome-description">
-            Connect with friends and family. Send messages, share photos, and stay in touch with the people who matter most.
-          </p>
-          
-          <div className="welcome-features">
-            <div className="feature">
-              <span className="feature-icon">💬</span>
-              <span>Real-time messaging</span>
+    <div className="flex min-h-screen w-full items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-2xl rounded-2xl bg-white p-10 text-center shadow-lg">
+        <div className="mb-6 flex justify-center">
+            <div className="rounded-full bg-green-100 p-4">
+                <MessageSquare size={60} className="text-green-600" />
             </div>
-            <div className="feature">
-              <span className="feature-icon">📱</span>
-              <span>Group chats</span>
-            </div>
-            <div className="feature">
-              <span className="feature-icon">🔒</span>
-              <span>End-to-end encryption</span>
-            </div>
-          </div>
-          
-          <Button
-            variant="primary"
-            size="large"
-            onClick={onGetStarted}
-            className="welcome-button"
-          >
-            Get Started
-          </Button>
         </div>
+        
+        <h1 className="text-4xl font-bold text-gray-800">
+          Welcome to WhatsApp Clone
+        </h1>
+        
+        <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600">
+          A modern, real-time messaging application built with the MERN stack and Socket.IO.
+        </p>
+        
+        <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="flex flex-col items-center gap-2">
+            <MessageSquare className="h-8 w-8 text-green-600" />
+            <h3 className="font-semibold text-gray-700">Real-time Chat</h3>
+            <p className="text-sm text-gray-500">Instant one-on-one and group messaging.</p>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <Users className="h-8 w-8 text-green-600" />
+            <h3 className="font-semibold text-gray-700">Group Management</h3>
+            <p className="text-sm text-gray-500">Create, join, and manage chat groups.</p>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <Lock className="h-8 w-8 text-green-600" />
+            <h3 className="font-semibold text-gray-700">Secure & Private</h3>
+            <p className="text-sm text-gray-500">Your conversations are important to us.</p>
+          </div>
+        </div>
+        
+        <Button
+          variant="primary"
+          size="large"
+          onClick={handleGetStarted}
+          className="mt-12 w-full max-w-xs"
+        >
+          Get Started
+        </Button>
       </div>
     </div>
   );

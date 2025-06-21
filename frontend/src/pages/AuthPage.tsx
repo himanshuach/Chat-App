@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Input } from '../components/common';
-import './AuthPage.css';
+import { Mail, Key, User as UserIcon } from 'lucide-react';
 
 interface AuthPageProps {
   onLogin?: (email: string, password: string) => void;
@@ -23,14 +23,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-header">
-          <h1>WhatsApp Clone</h1>
-          <p>Sign in to continue</p>
+    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-green-400 to-teal-600 p-4">
+      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-2xl">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-800">WhatsApp Clone</h1>
+          <p className="text-gray-500">{isLogin ? 'Sign in to your account' : 'Create a new account'}</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {!isLogin && (
             <Input
               type="text"
@@ -38,6 +38,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
               value={username}
               onChange={setUsername}
               size="large"
+              icon={<UserIcon size={18} className="text-gray-400" />}
             />
           )}
           
@@ -47,6 +48,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
             value={email}
             onChange={setEmail}
             size="large"
+            icon={<Mail size={18} className="text-gray-400" />}
           />
           
           <Input
@@ -55,23 +57,24 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
             value={password}
             onChange={setPassword}
             size="large"
+            icon={<Key size={18} className="text-gray-400" />}
           />
           
           <Button
             type="submit"
             variant="primary"
             size="large"
-            className="auth-button"
+            className="mt-2 w-full"
           >
-            {isLogin ? 'Sign In' : 'Sign Up'}
+            {isLogin ? 'Sign In' : 'Create Account'}
           </Button>
         </form>
         
-        <div className="auth-footer">
+        <div className="mt-6 border-t pt-6 text-center">
           <Button
             variant="ghost"
             onClick={() => setIsLogin(!isLogin)}
-            className="auth-toggle"
+            className="w-full !text-green-600 hover:!bg-green-50"
           >
             {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
           </Button>
