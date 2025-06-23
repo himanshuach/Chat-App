@@ -2,29 +2,23 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar/Sidebar';
 import ChatWindow from '../components/Chat/ChatWindow';
 import ProfileModal from '../components/Modals/ProfileModal';
-import './ChatPage.css';
 
 interface ChatPageProps {
   // Add props as needed
 }
 
 const ChatPage: React.FC<ChatPageProps> = () => {
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-
-  const handleChatSelect = (chatId: string) => {
-    setSelectedChat(chatId);
-  };
 
   const handleProfileModalToggle = () => {
     setIsProfileModalOpen(!isProfileModalOpen);
   };
 
   return (
-    <div className="chat-page">
-      <div className="chat-container">
+    <div className="h-screen w-screen bg-gray-100 flex justify-center items-center">
+      <div className="h-screen w-full max-w-7xl bg-white flex shadow-lg rounded-lg overflow-hidden">
         <Sidebar />
-        <div className="chat-content">
+        <div className="flex-1 flex flex-col bg-white">
           <ChatWindow />
         </div>
       </div>

@@ -5,12 +5,10 @@ import { useAuth } from './context/AuthContext';
 import ChatPage from './pages/ChatPage';
 import AuthPage from './pages/AuthPage';
 import WelcomePage from './pages/WelcomePage';
-import Spinner from './components/common/Spinner'; // Assuming you have a Spinner component
-
-import './App.css';
+import Spinner from './components/common/Spinner';
 
 function App() {
-  const { user, token, loading } = useAuth();
+  const { token, loading } = useAuth();
 
   // Show a loading spinner while the auth state is being determined
   if (loading) {
