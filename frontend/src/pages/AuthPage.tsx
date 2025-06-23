@@ -23,7 +23,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-green-400 to-teal-600 p-4">
+    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-sky-400 to-indigo-600 p-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-2xl">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-800">WhatsApp Clone</h1>
@@ -74,7 +74,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
           <Button
             variant="ghost"
             onClick={() => setIsLogin(!isLogin)}
-            className="w-full !text-green-600 hover:!bg-green-50"
+            className="w-full !text-blue-600 hover:!bg-green-50"
           >
             {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
           </Button>

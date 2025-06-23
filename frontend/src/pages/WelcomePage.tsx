@@ -11,7 +11,7 @@ const WelcomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gray-100 p-4">
+    <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-sky-400 to-indigo-600 p-4">
       <div className="w-full max-w-2xl rounded-2xl bg-white p-10 text-center shadow-lg">
         <div className="mb-6 flex justify-center">
             <div className="rounded-full bg-blue-100 p-4">
