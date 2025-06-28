@@ -2,6 +2,8 @@
 
 A real-time chat application built using the MERN stack (MongoDB, Express.js, React, Node.js) with TypeScript.
 
+![image](https://github.com/user-attachments/assets/b63609b4-2a63-4ef6-981f-61ff9a446c74)
+
 ## Project Structure
 
 ```
