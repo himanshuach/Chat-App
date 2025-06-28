@@ -34,7 +34,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   const baseClasses = 'w-full rounded-lg border bg-white text-gray-800 transition-all focus:outline-none focus:ring-2';
   const stateClasses = error 
     ? 'border-red-500 focus:ring-red-400' 
-    : 'border-gray-300 focus:ring-green-500';
+    : 'border-gray-300 focus:ring-blue-500';
   
   const sizeClasses = {
     small: 'px-3 py-1.5 text-xs h-8',
